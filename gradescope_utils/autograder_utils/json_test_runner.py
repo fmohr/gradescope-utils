@@ -5,6 +5,8 @@ import sys
 import time
 import json
 
+import traceback
+
 from unittest import result
 from unittest.signals import registerResult
 
@@ -15,12 +17,13 @@ class JSONTestResult(result.TestResult):
     Used by JSONTestRunner.
     """
     def __init__(self, stream, descriptions, verbosity, results, leaderboard,
-                 failure_prefix):
+                 failure_prefix, show_failure_stacktrace):
         super(JSONTestResult, self).__init__(stream, descriptions, verbosity)
         self.descriptions = descriptions
         self.results = results
         self.leaderboard = leaderboard
         self.failure_prefix = failure_prefix
+        self.show_failure_stacktrace = show_failure_stacktrace
 
     def getDescription(self, test):
         doc_first_line = test.shortDescription()
@@ -86,6 +89,9 @@ class JSONTestResult(result.TestResult):
                     else:
                         output += '\n\n'
                 output += "{0}{1}\n".format(self.failure_prefix, err[1])
+                if self.show_failure_stacktrace:
+                    trace_str = ''.join(traceback.format_exception(*err))
+                    output += "{0}\n".format(trace_str)
         result = {
             "name": self.getDescription(test),
         }
@@ -149,6 +155,7 @@ class JSONTestRunner(object):
     def __init__(self, stream=sys.stdout, descriptions=True, verbosity=1,
                  failfast=False, buffer=True, visibility=None,
                  stdout_visibility=None, post_processor=None,
+                 show_failure_stacktrace=False,
                  failure_prefix="Test Failed: "):
         """
         Set buffer to True to include test output in JSON
@@ -175,14 +182,17 @@ class JSONTestRunner(object):
             self.json_data["visibility"] = visibility
         if stdout_visibility:
             self.json_data["stdout_visibility"] = stdout_visibility
+        self.show_failure_stacktrace = show_failure_stacktrace
         self.failure_prefix = failure_prefix
 
     def _makeResult(self):
         return self.resultclass(self.stream, self.descriptions, self.verbosity,
                                 self.json_data["tests"], self.json_data["leaderboard"],
-                                self.failure_prefix)
+                                self.failure_prefix,
+                                self.show_failure_stacktrace)
 
     def run(self, test):
+        
         "Run the given test case or test suite."
         result = self._makeResult()
         registerResult(result)
