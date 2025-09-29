@@ -11,6 +11,9 @@ from unittest import result
 from unittest.signals import registerResult
 
 
+class DisabledTestException(Exception):
+    pass
+
 class JSONTestResult(result.TestResult):
     """A test result class that can print formatted text results to a stream.
 
@@ -89,9 +92,9 @@ class JSONTestResult(result.TestResult):
                     else:
                         output += '\n\n'
                 output += "{0}{1}\n".format(self.failure_prefix, err[1])
-                if self.show_failure_stacktrace:
+                if self.show_failure_stacktrace and not any([isinstance(e, DisabledTestException) for e in err]):
                     trace_str = ''.join(traceback.format_exception(*err))
-                    output += "{0}\n".format(trace_str)
+                    output += f"{type(err)}" + "{0}\n".format(trace_str)
         result = {
             "name": self.getDescription(test),
         }
