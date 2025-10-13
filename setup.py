@@ -32,8 +32,8 @@ setup(
     url='https://github.com/gradescope/gradescope-utils',
 
     # Author details
-    author='Ibrahim Awwal',
-    author_email='ibrahim@gradescope.com',
+    author='Felix Mohr',
+    author_email='mail@felixmohr.de',
 
     # Choose your license
     license='MIT',
