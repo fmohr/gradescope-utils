@@ -49,6 +49,9 @@ class JSONTestResult(result.TestResult):
 
     def getVisibility(self, test):
         return getattr(getattr(test, test._testMethodName), '__visibility__', None)
+    
+    def getHTML(self, test):
+        return getattr(getattr(test, test._testMethodName), '__html__', False)
 
     def getHideErrors(self, test):
         return getattr(getattr(test, test._testMethodName), '__hide_errors__', None)
@@ -78,6 +81,7 @@ class JSONTestResult(result.TestResult):
         tags = self.getTags(test)
         number = self.getNumber(test)
         visibility = self.getVisibility(test)
+        html = self.getHTML(test)
         hide_errors_message = self.getHideErrors(test)
         score = self.getScore(test)
         output = self.getOutput() or ""
@@ -114,7 +118,8 @@ class JSONTestResult(result.TestResult):
             result["tags"] = tags
         if output:
             result["output"] = output
-            result["output_format"] = "html"
+            if html:
+                result["output_format"] = "html"
 
         if visibility:
             result["visibility"] = visibility
