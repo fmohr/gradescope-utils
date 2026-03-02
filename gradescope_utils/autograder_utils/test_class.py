@@ -1,14 +1,25 @@
 import unittest
 import base64
 from io import BytesIO
+import pathlib
+
+created_figures = []
 
 class TestTemplate(unittest.TestCase):
 
     
     def plot_figure(self, fig):
 
+        imgdir = pathlib.Path("img/")
+        imgdir.mkdir(parents=True, exist_ok=True)
+
+        #
+        fig_num = len(created_figures)
+        fig.savefig(f"{imgdir}/{fig_num}.png", format='png')
+        created_figures.append(fig)
+
+        # produce figure output
         tmpfile = BytesIO()
-        #fig.savefig(tmpfile, format='png')
         fig.savefig(
             tmpfile,
             format="webp",
