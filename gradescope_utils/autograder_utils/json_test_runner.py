@@ -114,6 +114,8 @@ class JSONTestResult(result.TestResult):
             result["tags"] = tags
         if output:
             result["output"] = output
+            result["output_format"] = "html"
+
         if visibility:
             result["visibility"] = visibility
         if number:
@@ -223,9 +225,6 @@ class JSONTestRunner(object):
 
         if self.post_processor is not None:
             self.post_processor(self.json_data)
-        
-        # enable HTML output for tests
-        self.json_data["output_format"] = "html"
 
         json.dump(self.json_data, self.stream, indent=4)
         self.stream.write('\n')
