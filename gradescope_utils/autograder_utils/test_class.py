@@ -3,32 +3,52 @@ import base64
 from io import BytesIO
 import pathlib
 
+from gradescope_utils.autograder_utils.json_test_runner import DisabledTestException
+
 created_figures = []
 
 class TestTemplate(unittest.TestCase):
 
+    @classmethod
+    def setUpClass(cls):
+        cls.state = {
+            "flags": set()
+        }
+
+    def skip_on_missing_flag(self, flag, msg):
+        if flag not in self.state["flags"]:
+            raise DisabledTestException(msg)
     
-    def plot_figure(self, fig):
+    def set_flag(self, flag):
+        self.state["flags"].add(flag)
+    
+    def plot_figure(self, fig, dpi=100, quality=70):
 
         imgdir = pathlib.Path("img/")
         imgdir.mkdir(parents=True, exist_ok=True)
 
-        #
+        # create index for this figure
         fig_num = len(created_figures)
-        fig.savefig(f"{imgdir}/{fig_num}.png", format='png')
-        created_figures.append(fig)
-
+        
         # produce figure output
         tmpfile = BytesIO()
-        fig.savefig(
-            tmpfile,
-            format="webp",
-            dpi=100,
-            bbox_inches="tight",
-            pad_inches=0.02,
-            pil_kwargs={
-                "quality": 70,
-                "method": 6    # best compression, slower
-            })
+        for target in [tmpfile, f"{imgdir}/{fig_num}.webp"]:
+            fig.savefig(
+                target,
+                format="webp",
+                dpi=dpi,
+                bbox_inches="tight",
+                pad_inches=0.02,
+                pil_kwargs={
+                    "quality": quality,
+                    "method": 6    # best compression, slower
+                })
+        
         encoded = base64.b64encode(tmpfile.getvalue()).decode("iso-8859-1")
         print(f'<img src="data:image/webp;base64,{encoded}" />')
+
+        # memorize this
+        if "images" not in self.state:
+            self.state["images"] = []
+        self.state["images"].append(encoded)
+        created_figures.append(fig)
