@@ -21,6 +21,10 @@ class TestTemplate(unittest.TestCase):
     
     def set_flag(self, flag):
         self.state["flags"].add(flag)
+
+    @property
+    def flags(self):
+        return frozenset(self.state["flags"])
     
     def plot_figure(self, fig, dpi=100, quality=70):
 

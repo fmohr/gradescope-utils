@@ -51,17 +51,11 @@ class visibility(object):
         return func
     
 class html(object):
-    """Simple decorator to add a allow HTML output for a test
+    """Simple decorator to allow HTML output for a test. This is required if you want to use figures.
 
-    Usage: @html
+    Usage: @html(True)
 
-    Options for the visibility field are as follows:
-
-    - `hidden`: test case will never be shown to students
-    - `after_due_date`: test case will be shown after the assignment's due date has passed.
-      If late submission is allowed, then test will be shown only after the late due date.
-    - `after_published`: test case will be shown only when the assignment is explicitly published from the "Review Grades" page
-    - `visible` (default): test case will always be shown
+    Note that you must explicitly pass a boolean (True) to activate the option
     """
 
     def __init__(self, val):
