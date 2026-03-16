@@ -19,7 +19,7 @@ class TestTemplate(unittest.TestCase):
         if not hasattr(self, "state"):
             raise ValueError(
                 "The test has no 'state' attribute. This attribute is automatically instantiated upon test creation."
-                f" The most likely explanation for this is that your class {type(self)} overwrite the setUpClass method without invoking this method in the parent class.")
+                f" The most likely explanation for this is that your class {type(self)} overwrites the setUpClass method without invoking this method in the parent class.")
 
     def skip_on_missing_flag(self, flag, msg):
         self.check_state_existence()
