@@ -14,19 +14,29 @@ class TestTemplate(unittest.TestCase):
         cls.state = {
             "flags": set()
         }
+    
+    def check_state_existence(self):
+        if not hasattr(self, "state"):
+            raise ValueError(
+                "The test has no 'state' attribute. This attribute is automatically instantiated upon test creation."
+                f" The most likely explanation for this is that your class {type(self)} overwrite the setUpClass method without invoking this method in the parent class.")
 
     def skip_on_missing_flag(self, flag, msg):
+        self.check_state_existence()
         if flag not in self.state["flags"]:
             raise DisabledTestException(msg)
     
     def set_flag(self, flag):
+        self.check_state_existence()
         self.state["flags"].add(flag)
 
     @property
     def flags(self):
+        self.check_state_existence()
         return frozenset(self.state["flags"])
     
     def plot_figure(self, fig, dpi=100, quality=70):
+        self.check_state_existence()
 
         imgdir = pathlib.Path("img/")
         imgdir.mkdir(parents=True, exist_ok=True)
